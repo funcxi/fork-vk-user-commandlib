@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.funcxi:f0rk-user-vk-commandlib:1.0.1'
+    implementation 'com.github.funcxi:fork-user-vk-commandlib:1.0.1'
 }
 ```
 
