@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.funcxi:fork-user-vk-commandlib:1.0.1'
+    implementation 'com.github.funcxi:fork-user-vk-commandlib:1.0.2'
 }
 ```
 
@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.funcxi:fork-user-vk-commandlib:1.0.1")
+    implementation("com.github.funcxi:fork-user-vk-commandlib:1.0.2")
 }
 ```
 
@@ -37,7 +37,7 @@ dependencies {
 <dependency>
   <groupId>com.github.funcxi</groupId>
   <artifactId>fork-user-vk-commandlib</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
 </dependency>
 ```
 
