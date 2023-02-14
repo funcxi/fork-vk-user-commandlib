@@ -37,7 +37,7 @@ class CommandServiceBuilder {
         return this
     }
 
-    fun commandSender(commandSender: Class<CommandSender>): CommandServiceBuilder {
+    fun commandSender(commandSender: Class<out CommandSender>): CommandServiceBuilder {
         this.commandSender = commandSender
 
         return this
