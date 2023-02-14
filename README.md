@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.wasteix:user-vk-commandlib:1.0.1'
+    implementation 'com.github.funcxi:f0rk-user-vk-commandlib:1.0.1'
 }
 ```
 
@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.wasteix:user-vk-commandlib:1.0.1")
+    implementation("com.github.funcxi:fork-user-vk-commandlib:1.0.1")
 }
 ```
 
@@ -35,8 +35,8 @@ dependencies {
 </repository>
 
 <dependency>
-  <groupId>com.github.wasteix</groupId>
-  <artifactId>user-vk-commandlib</artifactId>
+  <groupId>com.github.funcxi</groupId>
+  <artifactId>fork-user-vk-commandlib</artifactId>
   <version>1.0.1</version>
 </dependency>
 ```
