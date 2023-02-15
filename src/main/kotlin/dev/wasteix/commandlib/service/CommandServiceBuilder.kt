@@ -5,57 +5,57 @@ import dev.wasteix.commandlib.model.sender.CommandSender
 import java.util.*
 
 class CommandServiceBuilder {
-    private var id: Int = -1
-    private lateinit var token: String
+private var id: Int = -1
+private lateinit var token: String
 
-    private var commandPrefixes: Array<out Char> = arrayOf('!', '/')
-    private val commandHandlers: LinkedList<(CommandSender, BaseCommand, Array<String>) -> Unit> = LinkedList()
-    private var commandSender: Class<out CommandSender> = CommandSender::class.java
-    private lateinit var exceptionHandler: (CommandSender, Exception) -> Unit
+private var commandPrefixes: Array<out Char> = arrayOf('!', '/')
+private val commandHandlers: LinkedList<(CommandSender, BaseCommand, Array<String>) -> Unit> = LinkedList()
+private var commandSender: Class<out CommandSender> = CommandSender::class.java
+private lateinit var exceptionHandler: (CommandSender, Exception) -> Unit
 
-    fun id(id: Int): CommandServiceBuilder {
-        this.id = id
+fun id(id: Int): CommandServiceBuilder {
+this.id = id
 
-        return this
-    }
+return this
+}
 
-    fun token(token: String): CommandServiceBuilder {
-        this.token = token
+fun token(token: String): CommandServiceBuilder {
+this.token = token
 
-        return this
-    }
+return this
+}
 
-    fun commandPrefixes(vararg commandPrefixes: Char): CommandServiceBuilder {
-        this.commandPrefixes = commandPrefixes.toTypedArray()
+fun commandPrefixes(vararg commandPrefixes: Char): CommandServiceBuilder {
+this.commandPrefixes = commandPrefixes.toTypedArray()
 
-        return this
-    }
+return this
+}
 
-    fun <T : CommandSender> commandHandler(commandHandler: (T, BaseCommand, Array<String>) -> Unit): CommandServiceBuilder {
-        commandHandlers.add(commandHandler as (CommandSender, BaseCommand, Array<String>) -> Unit)
+fun <T : CommandSender> commandHandler(commandHandler: (T, BaseCommand, Array<String>) -> Unit): CommandServiceBuilder {
+commandHandlers.add(commandHandler as (CommandSender, BaseCommand, Array<String>) -> Unit)
 
-        return this
-    }
+return this
+}
 
-    fun commandSender(commandSender: Class<out CommandSender>): CommandServiceBuilder {
-        this.commandSender = commandSender
+fun commandSender(commandSender: Class<out CommandSender>): CommandServiceBuilder {
+this.commandSender = commandSender
 
-        return this
-    }
+return this
+}
 
-    fun <T : CommandSender> exceptionHandler(
-        exceptionHandler: (T, Exception) -> Unit
-    ): CommandServiceBuilder {
-        this.exceptionHandler = exceptionHandler as (CommandSender, Exception) -> Unit
+fun <T : CommandSender> exceptionHandler(
+exceptionHandler: (T, Exception) -> Unit
+): CommandServiceBuilder {
+this.exceptionHandler = exceptionHandler as (CommandSender, Exception) -> Unit
 
-        return this
-    }
+return this
+}
 
-    fun build(): CommandService {
-        return CommandService(id, token, commandPrefixes, commandSender, commandHandlers, exceptionHandler)
-    }
+fun build(): CommandService {
+return CommandService(id, token, commandPrefixes, commandSender, commandHandlers, exceptionHandler)
+}
 
-    companion object {
-        fun create() = CommandServiceBuilder()
-    }
+companion object {
+fun create() = CommandServiceBuilder()
+}
 }
