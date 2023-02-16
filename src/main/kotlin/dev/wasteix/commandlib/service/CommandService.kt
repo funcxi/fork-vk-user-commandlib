@@ -11,99 +11,88 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class CommandService(
-id: Int,
-token: String,
-commandPrefixes: Array<out Char>,
-val commandSender: Class<out CommandSender>,
-val commandHandlers: List<(CommandSender, BaseCommand, Array<String>) -> Unit>,
-val exceptionHandler: ((CommandSender, Exception) -> Unit)?
+    id: Int,
+    token: String,
+    commandPrefixes: Array<out Char>,
+    val commandSender: Class<out CommandSender>,
+    val commandHandlers: List<(CommandSender, BaseCommand, Array<String>) -> Unit>,
+    val exceptionHandler: ((CommandSender, Exception) -> Unit)?
 ) {
-private val commands: MutableMap<String, BaseCommand> = HashMap()
-private val messageHandler = MessageHandler(this, commandPrefixes)
-private val userActor: UserActor = UserActor(id, token)
+    private val commands: MutableMap<String, BaseCommand> = HashMap()
+    private val messageHandler = MessageHandler(this, commandPrefixes)
+    private val userActor: UserActor = UserActor(id, token)
 
-private val vk = VkApiClient(HttpTransportClient.getInstance())
-val vkMessages: Messages = vk.messages()
+    private val vk = VkApiClient(HttpTransportClient.getInstance())
+    val vkMessages: Messages = vk.messages()
 
-var maxMsgId = 0
+    init {
+        Executors.newSingleThreadScheduledExecutor().apply {
+            val longPollServer = vkMessages.getLongPollServer(userActor)
+            var ts = longPollServer.execute().ts
 
-init {
-Executors.newSingleThreadScheduledExecutor().apply {
-val longPollServer = vkMessages.getLongPollServer(userActor)
-var ts = longPollServer.execute().ts
+            scheduleAtFixedRate({
+                val eventQuery = vkMessages.getLongPollHistory(userActor).ts(ts)
+                val messages = eventQuery.execute().messages.items
 
-scheduleAtFixedRate({
-val eventQuery = vkMessages.getLongPollHistory(userActor).ts(ts)
+                if (messages.isNotEmpty()) {
+                    ts = longPollServer.execute().ts
 
-if (maxMsgId > 0)
-eventQuery.maxMsgId(maxMsgId)
+                    for (message in messages) {
+                        if (message.isOut) return@scheduleAtFixedRate
 
-val messages = eventQuery.execute().messages.items
+                        messageHandler.handleMessage(message)
+                    }
+                }
+            }, 100, 120, TimeUnit.MILLISECONDS)
 
-if (messages.isNotEmpty()) {
-ts = longPollServer.execute().ts
+            scheduleAtFixedRate({
+                for (command in commands.values) {
+                    val dialogTimeout = command.dialogTimeout ?: continue
 
-for (message in messages) {
-if (!message.isOut) return@scheduleAtFixedRate
+                    for (dialogState in command.userDialogStates.values) {
+                        if (System.currentTimeMillis() < dialogState.timeout) continue
 
-val messageId = message.id
+                        val commandSender = dialogState.commandSender
 
-if (messageId > maxMsgId)
-maxMsgId = messageId
+                        command.removeState(dialogState.commandSender)
+                        if (dialogTimeout.messageTimeExpired.isNotEmpty())
+                            commandSender.sendReplyMessage(dialogTimeout.messageTimeExpired)
+                    }
+                }
+            }, 1, 1, TimeUnit.SECONDS)
+        }
+    }
 
-messageHandler.handleMessage(message)
-}
-}
-}, 100, 110, TimeUnit.MILLISECONDS)
+    fun send() = vkMessages.send(userActor)
 
-scheduleAtFixedRate({
-for (command in commands.values) {
-val dialogTimeout = command.dialogTimeout ?: continue
+    fun registerCommands(vararg commands: BaseCommand) {
+        for (command in commands) {
+            if (exceptionHandler != null) command.exceptionHandler = exceptionHandler
 
-for (dialogState in command.userDialogStates.values) {
-if (System.currentTimeMillis() < dialogState.timeout) continue
+            for (commandName in command.commandNames) this.commands[commandName] = command
+        }
+    }
 
-val commandSender = dialogState.commandSender
+    fun unregisterCommands(vararg commandNames: String) {
+        for (commandName in commandNames) commands.remove(commandName)
+    }
 
-command.removeState(dialogState.commandSender)
-if (dialogTimeout.messageTimeExpired.isNotEmpty())
-commandSender.sendReplyMessage(dialogTimeout.messageTimeExpired)
-}
-}
-}, 50, 100, TimeUnit.SECONDS)
-}
-}
+    fun unregisterCommands(vararg commands: BaseCommand) {
+        for (command in commands)
+            this.commands.remove(this.commands.entries
+                .stream()
+                .filter { it.value == command }
+                .map { it.key }
+                .findFirst()
+                .orElse(null)
+            )
+    }
 
-fun send() = vkMessages.send(userActor)
+    fun getCommand(commandName: String?): BaseCommand? {
+        for (command in commands.values) {
+            if (command.commandNames.contains(commandName)) return command
+        }
 
-fun registerCommands(vararg commands: BaseCommand) {
-for (command in commands) {
-if (exceptionHandler != null) command.exceptionHandler = exceptionHandler
-
-for (commandName in command.commandNames) this.commands[commandName] = command
-}
-}
-
-fun unregisterCommands(vararg commandNames: String) {
-for (commandName in commandNames) commands.remove(commandName)
-}
-
-fun unregisterCommands(vararg commands: BaseCommand) {
-for (command in commands)
-this.commands.remove(this.commands.entries
-.stream()
-.filter { it.value == command }
-.map { it.key }
-.findFirst()
-.orElse(null)
-)
-}
-
-fun getCommand(commandName: String?): BaseCommand? {
-for (command in commands.values) {
-if (command.commandNames.contains(commandName)) return command
-}
-
-return null
-}
+        return null
+    }
 }
