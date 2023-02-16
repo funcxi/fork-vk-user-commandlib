@@ -34,7 +34,7 @@ class CommandService(
             scheduleAtFixedRate({
                 val eventQuery = vkMessages.getLongPollHistory(userActor).ts(ts)
 
-                if (macMsgId > 0) 
+                if (maxMsgId > 0) 
                    eventQuery.maxMsgId(maxMsgId)
                    
                 val messages = eventQuery.execute().messages.items
@@ -42,7 +42,7 @@ class CommandService(
                 if (messages.isNotEmpty()) {
                     ts = longPollServer.execute().ts
 
-                    if (messages[0].isOut() {
+                    if (messages[0].isOut()) {
                         val messageId = messages[0].id
                         
                         if (messageId > maxMsgId)
