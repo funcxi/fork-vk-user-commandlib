@@ -29,18 +29,28 @@ class CommandService(
         Executors.newSingleThreadScheduledExecutor().apply {
             val longPollServer = vkMessages.getLongPollServer(userActor)
             var ts = longPollServer.execute().ts
+            var maxMsgId = -1
 
             scheduleAtFixedRate({
                 val eventQuery = vkMessages.getLongPollHistory(userActor).ts(ts)
-                val messages = eventQuery.execute().messages.items
 
+                if (macMsgId > 0) 
+                   eventQuery.maxMsgId(maxMsgId)
+                   
+                val messages = eventQuery.execute().messages.items
+                
                 if (messages.isNotEmpty()) {
                     ts = longPollServer.execute().ts
 
-                    for (message in messages) {
-                        if (message.isOut) return@scheduleAtFixedRate
+                    if (messages[0].isOut() {
+                        val messageId = messages[0].id
+                        
+                        if (messageId > maxMsgId)
+                            maxMsgId = messageId
+                    }
+                    return@scheduleAtFixedRate
 
-                        messageHandler.handleMessage(message)
+                    messageHandler.handleMessage(message)
                     }
                 }
             }, 100, 120, TimeUnit.MILLISECONDS)
