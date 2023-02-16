@@ -51,8 +51,7 @@ class CommandService(
                     return@scheduleAtFixedRate
 
                     messageHandler.handleMessage(message)
-                    }
-                }
+               }
             }, 100, 120, TimeUnit.MILLISECONDS)
 
             scheduleAtFixedRate({
