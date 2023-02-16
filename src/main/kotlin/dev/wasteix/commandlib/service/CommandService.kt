@@ -32,26 +32,28 @@ class CommandService(
             var maxMsgId = -1
 
             scheduleAtFixedRate({
-                val eventQuery = vkMessages.getLongPollHistory(userActor).ts(ts)
+                val eventQuery = vkMessages
+                    .getLongPollHistory(userActor)
+                    .ts(ts)
 
-                if (maxMsgId > 0) 
-                   eventQuery.maxMsgId(maxMsgId)
-                   
-                val messages = eventQuery.execute().messages.items
-                
-                if (messages.isNotEmpty()) {
+                if (maxMsgId > 0)
+                    eventQuery.maxMsgId(maxMsgId)
+
+                val message = eventQuery.execute()
+                    .messages.items
+
+                if (!message.isEmpty()) {
                     ts = longPollServer.execute().ts
 
-                    if (messages[0].isOut()) {
-                        val messageId = messages[0].id
-                        
+                    if (!message[0].isOut) {
+                        val messageId = message[0].id
+
                         if (messageId > maxMsgId)
                             maxMsgId = messageId
                     }
-                    return@scheduleAtFixedRate
-                    for (message in messages)
-                        messageHandler.handleMessage(message)
-               }
+                    messageHandler.handleMessage(message[0])
+                }
+                
             }, 100, 120, TimeUnit.MILLISECONDS)
 
             scheduleAtFixedRate({
