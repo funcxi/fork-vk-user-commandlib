@@ -49,8 +49,8 @@ class CommandService(
                             maxMsgId = messageId
                     }
                     return@scheduleAtFixedRate
-
-                    messageHandler.handleMessage(messages)
+                    for (message in messages)
+                        messageHandler.handleMessage(message)
                }
             }, 100, 120, TimeUnit.MILLISECONDS)
 
