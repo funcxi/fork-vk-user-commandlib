@@ -2,6 +2,8 @@
 
 Данная библиотека предназначена для упрощения создания команд **_исключительно_** для страничных [VK](https://vk.com/) ботов
 
+[![](https://jitpack.io/v/funcxi/fork-vk-user-commandlib.svg)](https://jitpack.io/#funcxi/fork-vk-user-commandlib)
+
 ### Подключение библиотеки в проект:
 #### Gradle Groovy DSL:
 ``` groovy
@@ -11,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.funcxi:fork-user-vk-commandlib:1.0.2'
+    implementation 'com.github.funcxi:fork-user-vk-commandlib:command-lib-latest'
 }
 ```
 
@@ -23,7 +25,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.funcxi:fork-user-vk-commandlib:1.0.2")
+    implementation("com.github.funcxi:fork-user-vk-commandlib:$command-lib-latest")
 }
 ```
 
@@ -37,7 +39,7 @@ dependencies {
 <dependency>
   <groupId>com.github.funcxi</groupId>
   <artifactId>fork-user-vk-commandlib</artifactId>
-  <version>1.0.2</version>
+  <version>command-lib-latest</version>
 </dependency>
 ```
 
