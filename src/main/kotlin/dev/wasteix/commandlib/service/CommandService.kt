@@ -54,7 +54,7 @@ maxMsgId = messageId
 messageHandler.handleMessage(message)
 }
 }
-}, 1, 1, TimeUnit.MILLISECONDS)
+}, 100, 110, TimeUnit.MILLISECONDS)
 
 scheduleAtFixedRate({
 for (command in commands.values) {
@@ -70,7 +70,7 @@ if (dialogTimeout.messageTimeExpired.isNotEmpty())
 commandSender.sendReplyMessage(dialogTimeout.messageTimeExpired)
 }
 }
-}, 1, 1, TimeUnit.SECONDS)
+}, 50, 100, TimeUnit.SECONDS)
 }
 }
 
