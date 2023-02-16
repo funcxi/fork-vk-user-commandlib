@@ -10,7 +10,6 @@ import java.util.*
 class MessageHandler(private val commandService: CommandService, private val commandPrefixes: Array<out Char>) {
     fun handleMessage(message: Message) {
         val commandArgs = message.text.lowercase().split(" ").toTypedArray()
-        println("[Message] FromId ${message.fromId} text: ${message.text.lowercase()}")
         val payload = if (message.replyMessage != null) {
             fromJson(message.replyMessage.payload)
         } else if (message.fwdMessages.isNotEmpty()) {
